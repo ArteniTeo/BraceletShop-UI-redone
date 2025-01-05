@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <style>
+        :root {
+            --main-color: #e6cffb;
+            --secondary-color: #af69ef;
+            --button-color: #9148c7;
+            --button-hover-color: #6e3799;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--main-color);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header .logo {
+            font-weight: bold;
+        }
+        .header .search {
+            flex-grow: 0;
+            margin: 0 20px;
+        }
+        .header .search input {
+            width: 300px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .header .actions button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .header .actions button:hover {
+            background-color: var(--button-hover-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">LOGO</div>
+        <div class="search">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="actions">
+            <button id="actionButton" onclick="handleActionClick()">Home</button>
+        </div>
+    </div>
+    <script>
+        function handleActionClick() {
+            window.location.href = 'landingPage.html';
+        }
+    </script>
+</body>

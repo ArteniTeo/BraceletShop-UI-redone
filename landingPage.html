@@ -1,0 +1,173 @@
+<!-- landingPage.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <style>
+        :root {
+            --main-color: #e6cffb;
+            --secondary-color: #af69ef;
+            --button-color: #9148c7;
+            --button-hover-color: #6e3799;
+            --eggplant:#8a4586;
+            --true-purple:#56216f;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--main-color);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header .logo {
+            font-weight: bold;
+        }
+        .header .search {
+            flex-grow: 0;
+            margin: 0 20px;
+        }
+        .header .search input {
+            width: 300px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .header .actions button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .header .actions button:hover {
+            background-color: var(--button-hover-color);
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            justify-content: center;
+            gap: 25px;
+            padding: 20px;
+        }
+        .product-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+            background-color: #f3e7ff;
+        }
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .product-card h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .product-card p {
+            font-size: 0.9em;
+            color: #555;
+            margin: 5px 0;
+        }
+        .product-card .price {
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">LOGO</div>
+        <div class="search">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="actions">
+            <button id="actionButton" onclick="handleActionClick()">Log In/Sign Up</button>
+        </div>
+    </div>
+
+    <div class="products" id="productContainer">
+        <!-- Products will be loaded here -->
+    </div>
+
+    <script>
+        // Check if the user is logged in
+        function checkLoginStatus() {
+            const user = localStorage.getItem('user');
+            const actionButton = document.getElementById('actionButton');
+
+            if (user) {
+                actionButton.textContent = 'My Account';
+                actionButton.onclick = () => {
+                    window.location.href = 'myaccount.html';
+                };
+            } else {
+                actionButton.textContent = 'Log In/Sign Up';
+                actionButton.onclick = () => {
+                    window.location.href = 'login.html';
+                };
+            }
+        }
+
+        function handleActionClick() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                alert('Redirecting to My Account page.');
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load products from API
+        async function loadProducts() {
+            try {
+                const response = await fetch('http://localhost:1234/products');
+                const products = await response.json();
+                const productContainer = document.getElementById('productContainer');
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <p class="price">$${product.price}</p>
+                    `;
+                    productContainer.appendChild(productCard);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Run on page load
+        window.onload = () => {
+            checkLoginStatus();
+            loadProducts();
+        };
+    </script>
+</body>
+</html>
