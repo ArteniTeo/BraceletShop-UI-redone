@@ -24,22 +24,9 @@
             background-color: var(--secondary-color);
             color: white;
             padding: 10px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
         .header .logo {
             font-weight: bold;
-        }
-        .header .search {
-            flex-grow: 0;
-            margin: 0 20px;
-        }
-        .header .search input {
-            width: 300px;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
         }
         .header .actions button {
             background-color: var(--button-color);
@@ -52,21 +39,132 @@
         .header .actions button:hover {
             background-color: var(--button-hover-color);
         }
+        .welcome {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 0 40px;
+        }
+        .product-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: scale(1.05);
+            background-color: #f3e7ff;
+        }
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .product-card h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        .product-card p {
+            font-size: 0.9em;
+            color: #555;
+            margin: 5px 0;
+        }
+        .product-card .price {
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--secondary-color);
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo">LOGO</div>
-        <div class="search">
-            <input type="text" placeholder="Search...">
-        </div>
+        <div class="logo">My Account</div>
         <div class="actions">
-            <button id="actionButton" onclick="handleActionClick()">Home</button>
+            <button id="actionButton" onclick="logout()">Log out</button>
         </div>
     </div>
+
+    <div class="welcome" id="welcomeMessage">
+        Welcome to your account!
+    </div>
+
+    <div class="products" id="productsContainer">
+        <!-- User's products will be displayed here -->
+    </div>
+
     <script>
-        function handleActionClick() {
+        // Logout functionality
+        function logout() {
+            localStorage.removeItem('user');
             window.location.href = 'landingPage.html';
         }
+
+        // Load user's products from API
+        async function loadUserProducts() {
+            const user = localStorage.getItem('user');
+            const productsContainer = document.getElementById('productsContainer');
+
+            if (!user) {
+                alert('User not logged in. Redirecting to login page.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const uid = JSON.parse(user).id;
+
+            try {
+                const response = await fetch(`http://localhost:1234/items?id=${uid}`);
+                const items = await response.json();
+
+                if (items.length === 0) {
+                    productsContainer.innerHTML = `<p>No products found.</p>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+
+                    productCard.innerHTML = `
+                        <img src="${item.product.imageUrl}" alt="${item.product.name}">
+                        <h3>${item.product.name}</h3>
+                        <p>${item.product.description}</p>
+                        <p class="price">Price: $${item.product.price}</p>
+                        <p>Quantity: ${item.quantity}</p>
+                    `;
+
+                    productsContainer.appendChild(productCard);
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productsContainer.innerHTML = `<p>Failed to load products. Please try again later.</p>`;
+            }
+        }
+
+        // Display user's username
+        function displayWelcomeMessage() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const welcomeMessage = document.getElementById('welcomeMessage');
+
+            if (user) {
+                welcomeMessage.textContent = `Welcome, ${user.username}!`;
+            }
+        }
+
+        // Run on page load
+        window.onload = () => {
+            displayWelcomeMessage();
+            loadUserProducts();
+        };
     </script>
 </body>
+</html>
