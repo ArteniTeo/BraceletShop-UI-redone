@@ -89,13 +89,15 @@
                     method: 'GET'
                 });
 
-                if (!response.ok) {
-                    throw new Error('Login failed');
-                }
-
                 const userData = await response.json();
                 localStorage.setItem('user', JSON.stringify(userData));
-                window.location.href = 'landingPage.html';
+                const user = localStorage.getItem('user');
+                const uid = JSON.parse(user).id;
+                if (uid) {   
+                    window.location.href = 'landingPage.html';
+                } else {
+                    throw new Error('Login failed. Incorrect username, email or password');
+                }
             } catch (error) {
                 alert('Login error: ' + error.message);
             }
